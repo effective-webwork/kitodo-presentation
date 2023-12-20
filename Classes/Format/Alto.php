@@ -36,7 +36,23 @@ class Alto implements \Kitodo\Dlf\Common\FulltextInterface
     public function getRawText(\SimpleXMLElement $xml)
     {
         $rawText = '';
-        $xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v2#');
+        // instead of this...
+        //$xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v2#');
+
+        //...we could use this
+        $namespace = $xml->getDocNamespaces();
+
+        if (in_array('http://www.loc.gov/standards/alto/ns-v2#', $namespace, true)) {
+            $xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v2#');
+        }
+        
+        if (in_array('http://www.loc.gov/standards/alto/ns-v3#', $namespace, true)) {
+            $xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v3#');
+        }
+        
+        if (in_array('http://www.loc.gov/standards/alto/ns-v4#', $namespace, true)) {
+            $xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v4#');
+        }
         // Get all (presumed) words of the text.
         $words = $xml->xpath('./alto:Layout/alto:Page/alto:PrintSpace//alto:TextBlock/alto:TextLine/alto:String/@CONTENT');
         if (!empty($words)) {
@@ -56,7 +72,23 @@ class Alto implements \Kitodo\Dlf\Common\FulltextInterface
      */
     public function getTextAsMiniOcr(\SimpleXMLElement $xml)
     {
-        $xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v2#');
+        // instead of this...
+        //$xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v2#');
+
+        //...we could use this
+        $namespace = $xml->getDocNamespaces();
+
+        if (in_array('http://www.loc.gov/standards/alto/ns-v2#', $namespace, true)) {
+            $xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v2#');
+        }
+        
+        if (in_array('http://www.loc.gov/standards/alto/ns-v3#', $namespace, true)) {
+            $xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v3#');
+        }
+        
+        if (in_array('http://www.loc.gov/standards/alto/ns-v4#', $namespace, true)) {
+            $xml->registerXPathNamespace('alto', 'http://www.loc.gov/standards/alto/ns-v4#');
+        }
 
         // get all text blocks
         $blocks = $xml->xpath('./alto:Layout/alto:Page/alto:PrintSpace//alto:TextBlock');
