@@ -292,6 +292,10 @@ dlfViewerScoreControl.prototype.loadScoreData = function (scoreData, tk) {
             dlfViewer.verovioMeasureActive.addClass('active');
             var measureId = $(this).parent().attr('id');
 
+            if (dlfViewer.measureIdLinks[measureId]) {
+                window.location.replace(dlfViewer.measureIdLinks[measureId]);
+            }
+
             // show measure on facsimile
             if (dlfUtils.exists(dlfViewer.measureLayer)) {
                 dlfViewer.facsimileMeasureActive = dlfViewer.measureLayer.getSource().getFeatureById(measureId);

@@ -275,7 +275,7 @@ class PageViewController extends AbstractController
      * @param int $page
      * @return void
      */
-    protected function getMeasures(int $page, $specificDoc = null) {
+    protected function getMeasures(int $page, $specificDoc = null, $docNumber = null) {
         if ($specificDoc) {
             $doc = $specificDoc;
         } else {
@@ -291,11 +291,35 @@ class PageViewController extends AbstractController
                 if ($defaultFileId == $measureData['files']['DEFAULT']['fileid']) {
                     $measureCoordsFromCurrentSite[$measureData['files']['SCORE']['begin']] = $measureData['files']['DEFAULT']['coords'];
                     $measureCounterToMeasureId[$i] = $measureData['files']['SCORE']['begin'];
+
+                    if ($specificDoc) {
+                        // build link for each measure
+                        $params = [
+                            'tx_dlf' => $this->requestData,
+                            'tx_dlf[docMeasure]['.$docNumber.']' => $i
+                        ];
+                    } else {
+                        // build link for each measure
+                        $params = [
+                            'tx_dlf' => $this->requestData,
+                            'tx_dlf[measure]' => $i
+                        ];
+                    }
+                    $uriBuilder = $this->uriBuilder;
+                    $uri = $uriBuilder
+                        ->setArguments($params)
+                        ->setArgumentPrefix('tx_dlf')
+                        ->uriFor('main');
+                    $measureLinks[$measureData['files']['SCORE']['begin']] = $uri;
                 }
                 $i++;
             }
         }
-        return ['measureCoordsCurrentSite' => $measureCoordsFromCurrentSite, 'measureCounterToMeasureId' => $measureCounterToMeasureId];
+        return [
+            'measureCoordsCurrentSite' => $measureCoordsFromCurrentSite,
+            'measureCounterToMeasureId' => $measureCounterToMeasureId,
+            'measureLinks' => $measureLinks
+        ];
     }
 
     /**
@@ -411,7 +435,7 @@ class PageViewController extends AbstractController
                     }
                     $docImage[0] = $this->getImage($docPage, $document);
                     $docScore = $this->getScore($docPage, $document);
-                    $docMeasures = $this->getMeasures($docPage, $document);
+                    $docMeasures = $this->getMeasures($docPage, $document, $i);
                     $docFulltext = [];
                     $docAnnotationContainers = [];
 
@@ -431,7 +455,8 @@ class PageViewController extends AbstractController
                                 annotationContainers: ' . json_encode($docAnnotationContainers) . ',
                                 measureCoords: ' . json_encode($docMeasures['measureCoordsCurrentSite']) . ',
                                 useInternalProxy: ' . ($this->settings['useInternalProxy'] ? 1 : 0) . ',
-                                currentMeasureId: "' . $currentMeasureId . '"
+                                currentMeasureId: "' . $currentMeasureId . '",
+                                measureIdLinks: ' . json_encode($docMeasures['measureLinks']) . '
                             });
                             ';
                     $i++;
@@ -452,6 +477,7 @@ class PageViewController extends AbstractController
             if ($this->requestData['measure']) {
                 $currentMeasureId = $docMeasures['measureCounterToMeasureId'][$this->requestData['measure']];
             }
+
             // Viewer configuration.
             $viewerConfiguration = '$(document).ready(function() {
                     if (dlfUtils.exists(dlfViewer)) {
@@ -466,7 +492,8 @@ class PageViewController extends AbstractController
                             measureCoords: ' . json_encode($docMeasures['measureCoordsCurrentSite']) . ',
                             useInternalProxy: ' . ($this->settings['useInternalProxy'] ? 1 : 0) . ',
                             verovioAnnotations: ' . json_encode($this->verovioAnnotations) . ',
-                            currentMeasureId: "' . $currentMeasureId . '"
+                            currentMeasureId: "' . $currentMeasureId . '",
+                            measureIdLinks: ' . json_encode($docMeasures['measureLinks']) . '
                         });
                     }
                 });';
