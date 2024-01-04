@@ -447,12 +447,11 @@ class PageViewController extends AbstractController
                 });';
         } else {
             $currentMeasureId = '';
+            $docPage = $this->requestData['page'];
+            $docMeasures = $this->getMeasures($docPage);
             if ($this->requestData['measure']) {
-                $docPage = $this->requestData['page'];
-                $docMeasures = $this->getMeasures($docPage);
                 $currentMeasureId = $docMeasures['measureCounterToMeasureId'][$this->requestData['measure']];
             }
-
             // Viewer configuration.
             $viewerConfiguration = '$(document).ready(function() {
                     if (dlfUtils.exists(dlfViewer)) {
