@@ -149,6 +149,108 @@ const dlfViewerScoreControl = function (dlfViewer, pagebeginning, pagecount) {
 
     $('#tx-dlf-score-' + this.dlfViewer.counter).text(this.dic['score-loading']);
 
+    this.measuresLoaded = false;
+
+    function makeSVG(tag, attrs) {
+        var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
+        for (var k in attrs)
+            el.setAttribute(k, attrs[k]);
+        return el;
+    }
+
+    this.showMeasures = function() {
+        //
+        // Draw boxes for each measure
+        //
+        var dlfViewer = this.dlfViewer;
+        var measureCoords = dlfViewer.measureCoords;
+        if (!this.measuresLoaded) {
+            setTimeout(function() {
+                $.each(measureCoords, function (key, value) {
+
+                    var bbox = $('#tx-dlf-score-' + dlfViewer.counter + ' #' + key)[0].getBBox();
+
+                    var measureRect = makeSVG('rect', {
+                        x: bbox['x'],
+                        y: bbox['y'],
+                        width:bbox['width'],
+                        height:bbox['height'],
+                        stroke: 'none',
+                        'stroke-width': 20,
+                        fill: 'red',
+                        'fill-opacity': '0'
+                    });
+                    $('#tx-dlf-score-' + dlfViewer.counter + ' #' + key)[0].appendChild(measureRect);
+
+                    if (key == dlfViewer.currentMeasureId) {
+                        $($('#tx-dlf-score-' + dlfViewer.counter + ' #' + key + ' > rect')[0]).addClass('active');
+
+                        dlfViewer.verovioMeasureActive = $($('#tx-dlf-score-' + dlfViewer.counter + ' #' + key + ' > rect')[0]);
+                    }
+                });
+
+                //
+                // SVG click event
+                //
+                $('#tx-dlf-score-' + dlfViewer.counter + ' rect').on('click', function(evt) {
+                    if (dlfViewer.verovioMeasureActive !== null) {
+                        dlfViewer.verovioMeasureActive.removeClass('active');
+                        dlfViewer.verovioMeasureActive = null;
+                    }
+                    if (dlfViewer.facsimileMeasureActive !== null) {
+                        dlfViewer.facsimileMeasureActive.setStyle(undefined);
+                        dlfViewer.facsimileMeasureActive = null;
+                    }
+
+                    dlfViewer.verovioMeasureActive = $(this);
+                    // set measure as active
+                    dlfViewer.verovioMeasureActive.addClass('active');
+                    var measureId = $(this).parent().attr('id');
+
+                    if (dlfViewer.measureIdLinks[measureId]) {
+                        window.location.replace(dlfViewer.measureIdLinks[measureId]);
+                    }
+
+                    // show measure on facsimile
+                    if (dlfUtils.exists(dlfViewer.measureLayer)) {
+                        dlfViewer.facsimileMeasureActive = dlfViewer.measureLayer.getSource().getFeatureById(measureId);
+                        dlfViewer.facsimileMeasureActive.setStyle(dlfViewerOLStyles.selectStyle());
+                    }
+
+                });
+                //
+                // SVG hover event
+                //
+                $('#tx-dlf-score-' + dlfViewer.counter + ' rect').on('pointermove', function(evt) {
+                    if (dlfViewer.verovioMeasureHover !== null) {
+                        dlfViewer.verovioMeasureHover.removeClass('hover');
+                        dlfViewer.verovioMeasureHover = null;
+                    }
+                    if (dlfViewer.facsimileMeasureHover !== null && dlfViewer.facsimileMeasureHover !== dlfViewer.facsimileMeasureActive) {
+                        dlfViewer.facsimileMeasureHover.setStyle(undefined);
+                        dlfViewer.facsimileMeasureHover = null;
+                    }
+
+                    dlfViewer.verovioMeasureHover = $(this);
+                    // set measure as active
+                    dlfViewer.verovioMeasureHover.addClass('hover');
+                    var measureId = $(this).parent().attr('id');
+
+                    // show measure in openlayer
+                    if (dlfUtils.exists(dlfViewer.measureLayer)) {
+                        dlfViewer.facsimileMeasureHover = dlfViewer.measureLayer.getSource().getFeatureById(measureId);
+                        if (dlfViewer.facsimileMeasureHover !== dlfViewer.facsimileMeasureActive) {
+                            if (dlfViewer.facsimileMeasureHover) {
+                                dlfViewer.facsimileMeasureHover.setStyle(dlfViewerOLStyles.hoverStyle());
+                            }
+                        }
+                    }
+                });
+                this.measuresLoaded = true;
+            }, 1000);
+        }
+    }
+
     this.changeActiveBehaviour();
 };
 
@@ -238,103 +340,6 @@ dlfViewerScoreControl.prototype.loadScoreData = function (scoreData, tk) {
             },
         })
     );
-
-    function makeSVG(tag, attrs) {
-        var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
-        for (var k in attrs)
-            el.setAttribute(k, attrs[k]);
-        return el;
-    }
-
-    //
-    // Draw boxes for each measure
-    //
-    var measureCoords = this.dlfViewer.measureCoords;
-    var dlfViewer = this.dlfViewer;
-    $( document ).ready(function() {
-        $.each(measureCoords, function (key, value) {
-            var bbox = $('#tx-dlf-score-' + dlfViewer.counter + ' #' + key)[0].getBBox();
-
-            var measureRect = makeSVG('rect', {
-                x: bbox['x'],
-                y: bbox['y'],
-                width:bbox['width'],
-                height:bbox['height'],
-                stroke: 'none',
-                'stroke-width': 20,
-                fill: 'red',
-                'fill-opacity': '0'
-            });
-            $('#tx-dlf-score-' + dlfViewer.counter + ' #' + key)[0].appendChild(measureRect);
-
-            if (key == dlfViewer.currentMeasureId) {
-                $($('#tx-dlf-score-' + dlfViewer.counter + ' #' + key + ' > rect')[0]).addClass('active');
-
-                dlfViewer.verovioMeasureActive = $($('#tx-dlf-score-' + dlfViewer.counter + ' #' + key + ' > rect')[0]);
-            }
-        });
-
-        //
-        // SVG click event
-        //
-        $('#tx-dlf-score-' + dlfViewer.counter + ' rect').on('click', function(evt) {
-            if (dlfViewer.verovioMeasureActive !== null) {
-                dlfViewer.verovioMeasureActive.removeClass('active');
-                dlfViewer.verovioMeasureActive = null;
-            }
-            if (dlfViewer.facsimileMeasureActive !== null) {
-                dlfViewer.facsimileMeasureActive.setStyle(undefined);
-                dlfViewer.facsimileMeasureActive = null;
-            }
-
-            dlfViewer.verovioMeasureActive = $(this);
-            // set measure as active
-            dlfViewer.verovioMeasureActive.addClass('active');
-            var measureId = $(this).parent().attr('id');
-
-            if (dlfViewer.measureIdLinks[measureId]) {
-                window.location.replace(dlfViewer.measureIdLinks[measureId]);
-            }
-
-            // show measure on facsimile
-            if (dlfUtils.exists(dlfViewer.measureLayer)) {
-                dlfViewer.facsimileMeasureActive = dlfViewer.measureLayer.getSource().getFeatureById(measureId);
-                dlfViewer.facsimileMeasureActive.setStyle(dlfViewerOLStyles.selectStyle());
-            }
-
-        });
-        //
-        // SVG hover event
-        //
-        $('#tx-dlf-score-' + dlfViewer.counter + ' rect').on('pointermove', function(evt) {
-            if (dlfViewer.verovioMeasureHover !== null) {
-                dlfViewer.verovioMeasureHover.removeClass('hover');
-                dlfViewer.verovioMeasureHover = null;
-            }
-            if (dlfViewer.facsimileMeasureHover !== null && dlfViewer.facsimileMeasureHover !== dlfViewer.facsimileMeasureActive) {
-                dlfViewer.facsimileMeasureHover.setStyle(undefined);
-                dlfViewer.facsimileMeasureHover = null;
-            }
-
-            dlfViewer.verovioMeasureHover = $(this);
-            // set measure as active
-            dlfViewer.verovioMeasureHover.addClass('hover');
-            var measureId = $(this).parent().attr('id');
-
-            // show measure in openlayer
-            if (dlfUtils.exists(dlfViewer.measureLayer)) {
-                dlfViewer.facsimileMeasureHover = dlfViewer.measureLayer.getSource().getFeatureById(measureId);
-                if (dlfViewer.facsimileMeasureHover !== dlfViewer.facsimileMeasureActive) {
-                    if (dlfViewer.facsimileMeasureHover) {
-                        dlfViewer.facsimileMeasureHover.setStyle(dlfViewerOLStyles.hoverStyle());
-                    }
-                }
-            }
-        });
-
-    });
-
-
 
     $("#tx_dlf_scoredownload").click(function () {
         if (typeof pdf_blob !== 'undefined') {
@@ -472,7 +477,7 @@ dlfViewerScoreControl.prototype.changeActiveBehaviour = function () {
 };
 
 dlfViewerScoreControl.prototype.addActiveBehaviourForSwitchOn = function () {
-    const anchorEl = $('#tx-dlf-tools-score');
+    const anchorEl = $('#tx-dlf-tools-score-' + this.dlfViewer.counter);
     if (anchorEl.length > 0) {
         const toggleScore = $.proxy(function (event) {
             event.preventDefault();
@@ -492,7 +497,7 @@ dlfViewerScoreControl.prototype.addActiveBehaviourForSwitchOn = function () {
     }
 
     // set initial title of score element
-    $("#tx-dlf-tools-score")
+    $("#tx-dlf-tools-score-" + this.dlfViewer.counter)
         .text(this.dic['score'])
         .attr('title', this.dic['score']);
 
@@ -500,7 +505,7 @@ dlfViewerScoreControl.prototype.addActiveBehaviourForSwitchOn = function () {
 };
 
 dlfViewerScoreControl.prototype.addActiveBehaviourForSwitchOff = function () {
-    const anchorEl = $('#tx-dlf-tools-score');
+    const anchorEl = $('#tx-dlf-tools-score-' + this.dlfViewer.counter);
     if (anchorEl.length > 0) {
         const toggleScore = $.proxy(function (event) {
             event.preventDefault();
@@ -518,7 +523,7 @@ dlfViewerScoreControl.prototype.addActiveBehaviourForSwitchOff = function () {
     }
 
     // set initial title of score element
-    $("#tx-dlf-tools-score")
+    $('#tx-dlf-tools-score-' + this.dlfViewer.counter)
         .text(this.dic['score-on'])
         .attr('title', this.dic['score-on']);
 
@@ -533,12 +538,14 @@ dlfViewerScoreControl.prototype.addActiveBehaviourForSwitchOff = function () {
  * Activate Score Features
  */
 dlfViewerScoreControl.prototype.activate = function () {
-    const controlEl = $('#tx-dlf-tools-score');
+    const controlEl = $('#tx-dlf-tools-score-' + this.dlfViewer.counter);
 
     // now activate the score overlay and map behavior
     this.enableScoreSelect();
     dlfUtils.setCookie("tx-dlf-pageview-score-select", 'enabled');
     $(controlEl).addClass('active');
+
+    this.showMeasures();
 
     // trigger event
     $(this).trigger("activate-fulltext", this);
@@ -548,7 +555,7 @@ dlfViewerScoreControl.prototype.activate = function () {
  * Activate Fulltext Features
  */
 dlfViewerScoreControl.prototype.deactivate = function () {
-    const controlEl = $('#tx-dlf-tools-score');
+    const controlEl = $('#tx-dlf-tools-score-' + this.dlfViewer.counter);
 
     // deactivate fulltext
     this.disableScoreSelect();
@@ -569,21 +576,21 @@ dlfViewerScoreControl.prototype.disableScoreSelect = function () {
     $('#tx-dfgviewer-map').width('100%');
     this.dlfViewer.updateLayerSize();
 
-    $("#tx-dlf-tools-score").removeClass(className)
+    $('#tx-dlf-tools-score-' + this.dlfViewer.counter).removeClass(className)
 
     if (this.activateFullTextInitially === 0) {
-        $("#tx-dlf-tools-score")
+        $('#tx-dlf-tools-score-' + this.dlfViewer.counter)
             .text(this.dic['score-on'])
             .attr('title', this.dic['score-on']);
     }
 
     // $('#tx-dlf-score').removeClass(className);
     // $('#tx-dlf-score').hide();
-    $('*[id*=tx-dlf-score-]').addClass(className).show();
+    $('*[id*=tx-dlf-score-]').removeClass(className).hide();
     $('body').removeClass(className);
 
     if (this.dlfViewer.measureLayer) {
-        this.dlfViewer.measureLayer.setVisible(false);
+        this.dlfViewer.measureLayer.setVisible(true);
     }
 
 };
@@ -598,10 +605,10 @@ dlfViewerScoreControl.prototype.enableScoreSelect = function () {
 
 
     // show score container
-    $("#tx-dlf-tools-score").addClass(className);
+    $('#tx-dlf-tools-score-' + this.dlfViewer.counter).addClass(className);
 
     if (this.activateFullTextInitially === 0) {
-        $("#tx-dlf-tools-score")
+        $('#tx-dlf-tools-score-' + this.dlfViewer.counter)
             .text(this.dic['score-off'])
             .attr('title', this.dic['score-off']);
     }
@@ -630,6 +637,6 @@ dlfViewerScoreControl.prototype.scrollToPagebeginning = function () {
         // trigger scroll
         $('#tx-dlf-score-' + this.dlfViewer.counter).scrollTop(this.position - scrollOffset);
     } else {
-        $('#tx-dlf-tools-score').hide();
+        $('#tx-dlf-tools-score-' + this.dlfViewer.counter).hide();
     }
 };
