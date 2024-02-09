@@ -7,8 +7,19 @@ $( document ).ready(function() {
     var grid = GridStack.init(options);
 
     if (Cookies.get('gsLayout')) {
-        grid.load(JSON.parse(Cookies.get('gsLayout')));
+        // only extract saved layout for elements that exist
+        var loadedGridLayout = JSON.parse(Cookies.get('gsLayout'));
+        $(loadedGridLayout).each(function () {
+            if ($("[gs-id='" + this.id + "']").length === 1) {
+                var element = $("[gs-id='" + this.id + "']")[0];
+                grid.update(element, this);
+            }
+        });
     }
+
+    $('.resetLayout').on('click', function (evt) {
+        Cookies.set('gsLayout', '');
+    });
 
     if (grid) {
         // resize each map
