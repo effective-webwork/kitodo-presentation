@@ -144,7 +144,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                     $i = 0;
                     foreach ($childDocuments as $document) {
                         $this->documentArray[] = Doc::getInstance($document['points'], $this->settings, true);
-                        if (isset(explode('#', $document['points'])[1])) {
+                        if (!isset($this->requestData['docPage'][$i]) && isset(explode('#', $document['points'])[1])) {
                             $initPage = explode('#', $document['points'])[1];
                             $this->requestData['docPage'][$i] = $initPage;
                         }
