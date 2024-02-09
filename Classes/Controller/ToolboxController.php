@@ -61,8 +61,8 @@ class ToolboxController extends AbstractController
      * @return void
      */
     private function renderTool() {
-        if (!empty($this->settings['tool'])) {
-            switch ($this->settings['tool']) {
+        if (!empty($this->settings['tools'])) {
+            switch ($this->settings['tools']) {
                 case 'tx_dlf_annotationtool':
                 case 'annotationtool':
                     $this->renderToolByName('renderAnnotationTool');
@@ -91,8 +91,11 @@ class ToolboxController extends AbstractController
                 case 'searchindocumenttool':
                     $this->renderToolByName('renderSearchInDocumentTool');
                     break;
+                case 'scoretool':
+                    $this->renderToolByName('renderScoreTool');
+                    break;
                 default:
-                    $this->logger->warning('Incorrect tool configuration: "' . $this->settings['tool'] . '". This tool does not exist.');
+                    $this->logger->warning('Incorrect tool configuration: "' . $this->settings['tools'] . '". This tool does not exist.');
             }
         }
     }
@@ -191,11 +194,10 @@ class ToolboxController extends AbstractController
      *
      * @return void
      */
-    public function scoretool()
+    public function renderScoreTool()
     {
         if (
-            $this->document === null
-            || $this->document->getDoc()->numPages < 1
+            $this->isDocMissingOrEmpty()
             || empty($this->extConf['fileGrpScore'])
         ) {
             // Quit without doing anything if required variables are not set.
