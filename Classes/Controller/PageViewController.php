@@ -351,22 +351,24 @@ class PageViewController extends AbstractController
             }
         }
 
-        $score['mimetype'] = $doc->getFileMimeType($loc);
-        $score['pagebeginning'] = $doc->getPageBeginning($pageId, $loc);
-        $score['url'] = $doc->getFileLocation($loc);
-        if ($this->settings['useInternalProxy']) {
-            // Configure @action URL for form.
-            $uri = $this->uriBuilder->reset()
-                ->setTargetPageUid($GLOBALS['TSFE']->id)
-                ->setCreateAbsoluteUri(!empty($this->settings['forceAbsoluteUrl']) ? true : false)
-                ->setArguments([
-                    'eID' => 'tx_dlf_pageview_proxy',
-                    'url' => $score['url'],
-                    'uHash' => GeneralUtility::hmac($score['url'], 'PageViewProxy')
-                    ])
-                ->build();
+        if (!empty($loc)) {
+            $score['mimetype'] = $doc->getFileMimeType($loc);
+            $score['pagebeginning'] = $doc->getPageBeginning($pageId, $loc);
+            $score['url'] = $doc->getFileLocation($loc);
+            if ($this->settings['useInternalProxy']) {
+                // Configure @action URL for form.
+                $uri = $this->uriBuilder->reset()
+                    ->setTargetPageUid($GLOBALS['TSFE']->id)
+                    ->setCreateAbsoluteUri(!empty($this->settings['forceAbsoluteUrl']) ? true : false)
+                    ->setArguments([
+                        'eID' => 'tx_dlf_pageview_proxy',
+                        'url' => $score['url'],
+                        'uHash' => GeneralUtility::hmac($score['url'], 'PageViewProxy')
+                        ])
+                    ->build();
 
-            $score['url'] = $uri;
+                $score['url'] = $uri;
+            }
         }
 
         if (empty($score)) {
@@ -420,6 +422,7 @@ class PageViewController extends AbstractController
             $jsViewer = 'tx_dlf_viewer = [];';
             $i = 0;
             $globalPage = $this->requestData['page'];
+            $documentScoreAvailable = [];
             foreach ($this->documentArray as $document) {
                 if ($document !== null) {
                     $docPage = $this->requestData['docPage'][$i];
@@ -435,6 +438,9 @@ class PageViewController extends AbstractController
                     }
                     $docImage[0] = $this->getImage($docPage, $document);
                     $docScore = $this->getScore($docPage, $document);
+                    if (isset($docScore['url'])) {
+                        $documentScoreAvailable[$i] = true;
+                    }
                     $docMeasures = $this->getMeasures($docPage, $document, $i);
                     $docFulltext = [];
                     $docAnnotationContainers = [];
@@ -498,6 +504,7 @@ class PageViewController extends AbstractController
                     }
                 });';
         }
+        $this->view->assign('scoreAvailable', $documentScoreAvailable);
         $this->view->assign('viewerConfiguration', $viewerConfiguration);
     }
 
