@@ -483,7 +483,7 @@ dlfViewer.prototype.addCustomControls = function() {
         $('#tx-dlf-tools-fulltext').remove();
     }
 
-	if (this.scoresLoaded_ !== null) {
+	if (this.scoresLoaded_ !== undefined) {
         var context = this;
 		const scoreControl = new dlfViewerScoreControl(this, this.pagebeginning, this.imageUrls.length);
         this.scoresLoaded_.then(function (scoreData) {
@@ -595,6 +595,8 @@ dlfViewer.prototype.addCustomControls = function() {
         }
 
 	} else {
+        $('#tx-dlf-score-' + this.counter).removeClass('score-visible');
+        $('#tx-dfgviewer-map-' + this.counter).width('100%');
 		$('#tx-dlf-tools-score').remove();
 	}
 
