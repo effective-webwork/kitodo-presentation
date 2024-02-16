@@ -46,26 +46,26 @@ dlfScoreUtil.fetchScoreDataFromServer = function (url, pagebeginning) {
         try {
             let score = tk.renderData(jqXHR.responseText, verovioSettings);
             const pageToShow = tk.getPageWithElement(pagebeginning);
-            console.log('pageToShow: ' + pageToShow);
+            // console.log('pageToShow: ' + pageToShow);
             score = tk.renderToSVG(pageToShow);
 
-            console.log("this is url " + url)
+            // console.log("this is url " + url)
 
-            // $("#player").midiPlayer();
+            $("#player").midiPlayer();
 
-            //console.log(dlfScoreUtils.get_play_midi);
-            // $("#tx-dlf-tools-midi").click(
-            //     function () {
-            //         var base64midi = tk.renderToMIDI();
-            //         var song = 'data:audio/midi;base64,' + base64midi;
-            //         console.log(song);
-            //         // $("#player").show();
-            //         // $("#tx-dlf-tools-midi").hide();
-            //
-            //         // $("#player").loadFile(song);
-            //         $("#player").midiPlayer.play(song);
-            //
-            //     })
+            // console.log(dlfScoreUtils.get_play_midi);
+            $("#tx-dlf-tools-midi").click(
+                function () {
+                    var base64midi = tk.renderToMIDI();
+                    var song = 'data:audio/midi;base64,' + base64midi;
+                    // console.log(song);
+                    // $("#player").show();
+                    // $("#tx-dlf-tools-midi").hide();
+
+                    // $("#player").loadFile(song);
+                    $("#player").midiPlayer.play(song);
+
+                })
 
             const midi = tk.renderToMIDI();
             const str2blob = new Blob([midi]);
