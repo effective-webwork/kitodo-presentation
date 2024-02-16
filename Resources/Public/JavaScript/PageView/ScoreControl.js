@@ -288,8 +288,8 @@ dlfViewerScoreControl.prototype.loadScoreData = function (scoreData, tk) {
         // view: tx_dlf_viewer.view,
         view: new ol.View({
             projection: proj,
-            center: [0, 0],
-            // center: ol.extent.getCenter(extent),
+            //center: [0, 0],
+            center: ol.extent.getCenter(extent),
             extent: extent,
             zoom: 1,
             minZoom: 1,

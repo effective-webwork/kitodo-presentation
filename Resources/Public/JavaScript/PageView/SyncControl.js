@@ -79,8 +79,8 @@ dlfViewerSyncControl.prototype.addMapEventListener = function () {
             var rotation = map2.getView().getRotation();
             controlContext.sync = false;
             map1.getView().animate({
-                center: [center[0] - controlContext.dx, center[1] - controlContext.dy],
-                zoom: zoom - controlContext.dz,
+                center: [center[0] + controlContext.dx, center[1] + controlContext.dy],
+                zoom: zoom + controlContext.dz,
                 rotation: rotation - controlContext.dr,
                 duration: 0
             }, function() { controlContext.sync = true; });
