@@ -203,7 +203,12 @@ class ToolboxController extends AbstractController
             // Quit without doing anything if required variables are not set.
             return;
         }
-        $currentPhysPage = $this->document->getDoc()->physicalStructure[$this->requestData['page']];
+
+        if ($this->requestData['page']) {
+            $currentPhysPage = $this->document->getDoc()->physicalStructure[$this->requestData['page']];
+        } else {
+            $currentPhysPage = $this->document->getDoc()->physicalStructure[1];
+        }
 
         $fileGrpsScores = GeneralUtility::trimExplode(',', $this->extConf['fileGrpScore']);
         foreach ($fileGrpsScores as $fileGrpScore) {
