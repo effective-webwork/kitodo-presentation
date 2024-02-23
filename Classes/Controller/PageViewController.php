@@ -199,14 +199,17 @@ class PageViewController extends AbstractController
                     MathUtility::forceIntegerInRange((int) $this->requestData['docMeasure'][$i] - 1, 1, $document->numMeasures, 1)
             ]);
 
-            $navigationMeasureArray[$i]['next'] = [
-                'tx_dlf[docMeasure]['.$i.']' =>
-                    MathUtility::forceIntegerInRange((int) $this->requestData['docMeasure'][$i] + 1, 1, $document->numMeasures, 1)
-            ];
-            $navigationMeasureArray[$i]['prev'] = [
-                'tx_dlf[docMeasure]['.$i.']' =>
-                    MathUtility::forceIntegerInRange((int) $this->requestData['docMeasure'][$i] - 1, 1, $document->numMeasures, 1)
-            ];
+            if ($document->numMeasures > 0) {
+                $navigationMeasureArray[$i]['next'] = [
+                    'tx_dlf[docMeasure]['.$i.']' =>
+                        MathUtility::forceIntegerInRange((int) $this->requestData['docMeasure'][$i] + 1, 1, $document->numMeasures, 1)
+                ];
+
+                $navigationMeasureArray[$i]['prev'] = [
+                    'tx_dlf[docMeasure]['.$i.']' =>
+                        MathUtility::forceIntegerInRange((int) $this->requestData['docMeasure'][$i] - 1, 1, $document->numMeasures, 1)
+                ];
+            }
 
             $docNumPages[$i] = $document->numPages;
             $i++;
