@@ -589,6 +589,9 @@ dlfViewerScoreControl.prototype.disableScoreSelect = function () {
 
     // $('*[id*=tx-dlf-score-]').removeClass(className).hide();
     $('#tx-dlf-score-' + this.dlfViewer.counter).removeClass(className).hide();
+    $('#tx-dfgviewer-map-' + this.dlfViewer.counter + ' .ol-overlaycontainer-stopevent').hide();
+    $('#tx-dfgviewer-map-' + this.dlfViewer.counter + ' ~ .score-tool #tx-dlf-tools-midi').hide();
+    $('.document-view:not(.multiview) .document-functions #tx-dlf-tools-midi').hide();
     $('body').removeClass(className);
 
     if (this.dlfViewer.measureLayer) {
@@ -619,6 +622,9 @@ dlfViewerScoreControl.prototype.enableScoreSelect = function () {
     // $('#tx-dlf-score').show();
     // $('*[id*=tx-dlf-score-]').addClass(className).show();
     $('#tx-dlf-score-' + this.dlfViewer.counter).addClass(className).show();
+    $('#tx-dfgviewer-map-' + this.dlfViewer.counter + ' .ol-overlaycontainer-stopevent').show();
+    $('#tx-dfgviewer-map-' + this.dlfViewer.counter + ' ~ .score-tool #tx-dlf-tools-midi').show();
+    $('.document-view:not(.multiview) .document-functions #tx-dlf-tools-midi').show();
     // $('#tx-dlf-score').show();
     $('body').addClass(className);
     this.scrollToPagebeginning();
