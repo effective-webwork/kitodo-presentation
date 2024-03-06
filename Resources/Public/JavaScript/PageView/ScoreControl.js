@@ -575,7 +575,7 @@ dlfViewerScoreControl.prototype.deactivate = function () {
  */
 dlfViewerScoreControl.prototype.disableScoreSelect = function () {
 
-    $('#tx-dfgviewer-map-' + this.dlfViewer.counter).width('100%');
+    $('#tx-dfgviewer-map-' + this.dlfViewer.counter).width('100%').find('.custom-zoom').remove();
     this.dlfViewer.updateLayerSize();
 
     $('#tx-dlf-tools-score-' + this.dlfViewer.counter).removeClass(className)
@@ -607,7 +607,8 @@ dlfViewerScoreControl.prototype.disableScoreSelect = function () {
  */
 dlfViewerScoreControl.prototype.enableScoreSelect = function () {
 
-    $('#tx-dfgviewer-map-' + this.dlfViewer.counter).width('50%');
+    var customZoom = '<div class="custom-zoom">' + $('.view-functions ul li.zoom').html() + '</div>';
+    $('#tx-dfgviewer-map-' + this.dlfViewer.counter).width('50%').append(customZoom);
     this.dlfViewer.updateLayerSize();
 
 
