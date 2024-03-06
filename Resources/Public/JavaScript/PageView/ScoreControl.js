@@ -51,7 +51,9 @@ dlfScoreUtil.fetchScoreDataFromServer = function (url, pagebeginning) {
 
             // console.log("this is url " + url)
 
-            $("#player").midiPlayer();
+            $("#player").midiPlayer({
+              onStop: function () { $('body').removeClass('midi-active') }
+            });
 
             // console.log(dlfScoreUtils.get_play_midi);
             $("#tx-dlf-tools-midi").click(
@@ -64,7 +66,7 @@ dlfScoreUtil.fetchScoreDataFromServer = function (url, pagebeginning) {
 
                     // $("#player").loadFile(song);
                     $("#player").midiPlayer.play(song);
-
+                    $('body').addClass('midi-active');
                 })
 
             const midi = tk.renderToMIDI();
