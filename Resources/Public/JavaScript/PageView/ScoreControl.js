@@ -575,8 +575,13 @@ dlfViewerScoreControl.prototype.deactivate = function () {
  */
 dlfViewerScoreControl.prototype.disableScoreSelect = function () {
 
+    // Resize viewer back to 100% width and remove custom zoom control
     $('#tx-dfgviewer-map-' + this.dlfViewer.counter).width('100%').find('.custom-zoom').remove();
     this.dlfViewer.updateLayerSize();
+
+    // Remove sync button from the view functions in the upper right corner
+    $('.view-functions ul li.sync-view').remove();
+    this.dlfViewer.syncControl.unsetSync();
 
     $('#tx-dlf-tools-score-' + this.dlfViewer.counter).removeClass(className)
 
@@ -607,10 +612,14 @@ dlfViewerScoreControl.prototype.disableScoreSelect = function () {
  */
 dlfViewerScoreControl.prototype.enableScoreSelect = function () {
 
-    var customZoom = '<div class="custom-zoom">' + $('.view-functions ul li.zoom').html() + '</div>';
+    // Resize viewer to 50% width and add custom zoom control
+    const customZoom = '<div class="custom-zoom">' + $('.view-functions ul li.zoom').html() + '</div>';
     $('#tx-dfgviewer-map-' + this.dlfViewer.counter).width('50%').append(customZoom);
     this.dlfViewer.updateLayerSize();
 
+    // Add button to sync views to the view functions in the upper right corner
+    const syncZoomTitle = $('html[lang^="en"]')[0] ? 'Syncronize zoom function' : 'Zoom-Funktion synchronisieren';
+    $('.view-functions ul').append('<li class="sync-view"><a class="sync-view-toggle" title="' + syncZoomTitle + '" onclick="dlfViewerCustomViewSync(this)">' + syncZoomTitle + '</></li>');
 
     // show score container
     $('#tx-dlf-tools-score-' + this.dlfViewer.counter).addClass(className);
@@ -652,3 +661,11 @@ dlfViewerScoreControl.prototype.scrollToPagebeginning = function () {
         $('#tx-dlf-tools-score-' + this.dlfViewer.counter).hide();
     }
 };
+
+/**
+ * Custom toggle for sync function outside the OpenLayer object
+ */
+dlfViewerCustomViewSync = function (element) {
+  const isActive = $(element).toggleClass('active').hasClass('active');
+  isActive ? tx_dlf_viewer.syncControl.setSync() : tx_dlf_viewer.syncControl.unsetSync();
+}
