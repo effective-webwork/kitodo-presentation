@@ -154,11 +154,13 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                     $this->documentArray[] = $doc;
                 }
                 if ($this->requestData['multipleSource'] && is_array($this->requestData['multipleSource'])) {
+                    $i = 0;
                     foreach ($this->requestData['multipleSource'] as $location) {
                         $document = Doc::getInstance($location, $this->settings, true);
                         if ($document !== null) {
-                            $this->documentArray[] = $document;
+                            $this->documentArray['extra_' . $i] = $document;
                         }
+                        $i++;
                     }
                 }
 

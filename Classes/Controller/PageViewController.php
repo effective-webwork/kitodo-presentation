@@ -159,8 +159,9 @@ class PageViewController extends AbstractController
         $navigateAllMeasureNext = [];
         $navigateAllMeasurePrev = [];
         $docNumPages = [];
+        $removeDocumentButton = [];
         $i = 0;
-        foreach ($this->documentArray as $document) {
+        foreach ($this->documentArray as $key => $document) {
             // convert either page or measure if requestData exists
             if ($this->requestData['docPage'][$i] && empty($this->requestData['docMeasure'][$i])) {
                 // convert document page information to measure count information
@@ -211,6 +212,11 @@ class PageViewController extends AbstractController
                 ];
             }
 
+            $explodeKey = explode('_', $key);
+            if ($explodeKey[0] === 'extra') {
+                $removeDocumentButton[$i] = $explodeKey[1];
+            }
+
             $docNumPages[$i] = $document->numPages;
             $i++;
         }
@@ -223,6 +229,8 @@ class PageViewController extends AbstractController
         $this->view->assign('navigateAllMeasurePrev', $navigateAllMeasurePrev);
         $this->view->assign('navigateAllMeasureNext', $navigateAllMeasureNext);
         $this->view->assign('navigationMeasureArray', $navigationMeasureArray);
+
+        $this->view->assign('removeDocumentButton', $removeDocumentButton);
 
         $this->view->assign('docNumPage', $docNumPages);
     }
