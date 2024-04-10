@@ -2,7 +2,7 @@ $( document ).ready(function() {
     var options = { // put in gridstack options here
         disableOneColumnMode: true, // for jfiddle small window size
         float: false,
-        handle: '.drag',
+        handle: '.gridstack-dragging-handle',
         minW: 2,
         minH: 2
     };
@@ -19,8 +19,10 @@ $( document ).ready(function() {
         });
     }
 
-    $('.resetLayout').on('click', function (evt) {
+    $('.reset-gridstack-layout').on('click', function (evt) {
         Cookies.set('gsLayout', '');
+        location.reload();
+        return false;
     });
 
     if (grid) {
