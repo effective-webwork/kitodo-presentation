@@ -195,6 +195,11 @@ const dlfViewerScoreControl = function (dlfViewer, pagebeginning, pagecount) {
                 // SVG click event
                 //
                 $('#tx-dlf-score-' + dlfViewer.counter + ' rect').on('click', function(evt) {
+                    // show ajax spinner if exists
+                    if ($('#overlay .ajax-spinner')) {
+                        $('#overlay').fadeIn(300);
+                    }
+
                     if (dlfViewer.verovioMeasureActive !== null) {
                         dlfViewer.verovioMeasureActive.removeClass('active');
                         dlfViewer.verovioMeasureActive = null;
