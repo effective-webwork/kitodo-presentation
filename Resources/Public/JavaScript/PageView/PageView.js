@@ -555,11 +555,6 @@ dlfViewer.prototype.addCustomControls = function() {
             });
 
             map.on('singleclick', function (evt) {
-                // show ajax spinner if exists
-                if ($('#overlay .ajax-spinner')) {
-                    $('#overlay').fadeIn(300);
-                }
-                
                 if (context.facsimileMeasureActive !== null) {
                     context.verovioMeasureActive.removeClass('active');
                     context.facsimileMeasureActive.setStyle(undefined);
@@ -567,6 +562,11 @@ dlfViewer.prototype.addCustomControls = function() {
                 }
                 map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
                     if (feature !== null) {
+                        // show ajax spinner if exists
+                        if ($('#overlay .ajax-spinner')) {
+                            $('#overlay').fadeIn(300);
+                        }
+
                         context.facsimileMeasureActive = feature;
                         context.verovioMeasureActive = $('#tx-dlf-score-'+context.counter+' #' + feature.getId() + ' rect').addClass('active');
                         if (context.measureIdLinks[feature.getId()]) {
