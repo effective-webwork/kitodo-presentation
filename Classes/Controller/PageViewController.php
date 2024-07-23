@@ -140,8 +140,11 @@ class PageViewController extends AbstractController
 
         $this->addViewerJS();
 
-        $this->view->assign('docCount', count($this->documentArray));
-        $this->view->assign('docArray', $this->documentArray);
+        if ($this->documentArray !== null) {
+            $this->view->assign('docCount', count($this->documentArray));
+            $this->view->assign('docArray', $this->documentArray);
+        }
+
         $this->view->assign('docPage', $this->requestData['docPage']);
         $this->view->assign('docType', $this->document->getCurrentDocument()->tableOfContents[0]['type']);
 
@@ -462,7 +465,7 @@ class PageViewController extends AbstractController
      */
     protected function addViewerJS(): void
     {
-        if (count($this->documentArray) > 1) {
+        if ($this->documentArray !== null && count($this->documentArray) > 1) {
             $jsViewer = 'tx_dlf_viewer = [];';
             $i = 0;
             foreach ($this->documentArray as $document) {
