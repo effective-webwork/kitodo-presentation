@@ -424,7 +424,7 @@ class Helper
         if (
             !$uid
             // NOTE: Only use tables that don't have too many entries!
-            || !in_array($table, ['tx_dlf_collections', 'tx_dlf_libraries', 'tx_dlf_metadata', 'tx_dlf_structures', 'tx_dlf_solrcores'])
+            || !in_array($table, ['tx_dlf_collections', 'tx_dlf_libraries', 'tx_dlf_metadata', 'tx_dlf_metadatasubentries', 'tx_dlf_structures', 'tx_dlf_solrcores'])
         ) {
             self::log('Invalid UID "' . $uid . '" or table "' . $table . '"', LOG_SEVERITY_ERROR);
             return '';
@@ -720,7 +720,7 @@ class Helper
         // Check if we already got a translation.
         if (empty($labels[$table][$pid][$languageContentId][$indexName])) {
             // Check if this table is allowed for translation.
-            if (in_array($table, ['tx_dlf_collections', 'tx_dlf_libraries', 'tx_dlf_metadata', 'tx_dlf_structures'])) {
+            if (in_array($table, ['tx_dlf_collections', 'tx_dlf_libraries', 'tx_dlf_metadata', 'tx_dlf_metadatasubentries', 'tx_dlf_structures'])) {
                 $additionalWhere = $queryBuilder->expr()->in($table . '.sys_language_uid', [-1, 0]);
                 if ($languageContentId > 0) {
                     $additionalWhere = $queryBuilder->expr()->andX(
@@ -935,6 +935,11 @@ class Helper
     private static function getLocalConfigurationByPath(string $path)
     {
         $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
-        return $configurationManager->getLocalConfigurationValueByPath($path);
+
+        if (array_key_exists(strtok($path, '/'), $configurationManager->getLocalConfiguration())) {
+            return $configurationManager->getLocalConfigurationValueByPath($path);
+        }
+
+        return ArrayUtility::getValueByPath($GLOBALS['TYPO3_CONF_VARS'], $path);
     }
 }
