@@ -14,6 +14,7 @@ namespace Kitodo\Dlf\Controller;
 use Kitodo\Dlf\Pagination\PageGridPagination;
 use Kitodo\Dlf\Pagination\PageGridPaginator;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -44,18 +45,30 @@ class PageGridController extends AbstractController
             return $this->htmlResponse();
         }
 
-        $entryArray = [];
-
-        $numPages = $this->document->getCurrentDocument()->numPages;
-        // Iterate through visible page set and display thumbnails.
-        for ($i = 1; $i <= $numPages; $i++) {
-            $foundEntry = $this->getEntry($i, $this->extConf['files']['fileGrpThumbs']);
-            $foundEntry['state'] = ($i == $this->requestData['page']) ? 'cur' : 'no';
-            $entryArray[] = $foundEntry;
-        }
-
         // Get current page from request data because the parameter is shared between plugins
         $currentPage = $this->requestData['page'] ?? 1;
+
+        // access cachemanager for pagegrid
+        $cacheManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class);
+        $cache = $cacheManager->getCache('tx_dlf_pagegrid');
+        $cacheKey = $this->document->getCurrentDocument()->recordId;
+        $cachedData = $cache->get($cacheKey);
+
+        if ($cachedData) {
+            $entryArray = $cachedData; //load from cache
+        } else {
+            $numPages = $this->document->getCurrentDocument()->numPages;
+
+            for ($i = 1; $i <= $numPages; $i++) {
+                $foundEntry = $this->getEntry($i, $this->extConf['files']['fileGrpThumbs']);
+                $foundEntry['state'] = 'no';
+                $entryArray[] = $foundEntry;
+            }
+
+            $cache->set($cacheKey, $entryArray, [], 86400);
+        }
+        // mark currently active page
+        $entryArray[$currentPage - 1]['state'] = 'cur';
 
         $itemsPerPage = $this->settings['paginate']['itemsPerPage'];
         if (empty($itemsPerPage)) {
