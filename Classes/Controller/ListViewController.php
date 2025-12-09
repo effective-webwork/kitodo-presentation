@@ -78,6 +78,9 @@ class ListViewController extends AbstractController
     public function mainAction(): void
     {
         $this->searchParams = $this->getParametersSafely('searchParameter');
+        if (!$this->searchParams) {
+            $this->searchParams = $this->getParametersSafely('searchParameter', ['tx_dlf_search']);
+        }
 
         // extract collection(s) from collection parameter
         $collections = [];
