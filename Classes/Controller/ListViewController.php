@@ -83,7 +83,7 @@ class ListViewController extends AbstractController
 
         if (isset($searchRequestData['searchParameter']) && is_array($searchRequestData['searchParameter'])) {
             $search = array_merge($search ?: [], $searchRequestData['searchParameter']);
-            $this->request->getAttribute('frontend.user')->setKey('ses', 'search', $search);
+            $GLOBALS['TYPO3_REQUEST']->getAttribute('frontend.user')->setKey('ses', 'search', $search);
         }
 
         // Get current page from request data because the parameter is shared between plugins
