@@ -256,7 +256,7 @@ abstract class AbstractController extends ActionController implements LoggerAwar
             }
         }
 
-        $parsedBody = $this->request->getParsedBody();
+        $parsedBody = $GLOBALS['TYPO3_REQUEST']->getParsedBody();
         if ($parsedBody) {
             $bodyParameter = $this->getParameterFromRequestData($parameterName, $parsedBody, $pluginNames);
             if ($bodyParameter !== null) {
@@ -264,7 +264,7 @@ abstract class AbstractController extends ActionController implements LoggerAwar
             }
         }
 
-        $queryParams = $this->request->getQueryParams();
+        $queryParams = $GLOBALS['TYPO3_REQUEST']->getQueryParams();
         if ($queryParams) {
             $queryParameter = $this->getParameterFromRequestData($parameterName, $queryParams, $pluginNames);
             if ($queryParameter !== null) {
