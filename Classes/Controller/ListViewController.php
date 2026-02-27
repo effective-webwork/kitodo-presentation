@@ -86,6 +86,14 @@ class ListViewController extends AbstractController
             $GLOBALS['TYPO3_REQUEST']->getAttribute('frontend.user')->setKey('ses', 'search', $search);
         }
 
+        // extract collection(s) from collection parameter
+        $collections = [];
+        if (array_key_exists('collection', $search)) {
+            foreach(explode(',', $search['collection']) as $collectionEntry) {
+                $collections[] = $this->collectionRepository->findByUid((int) $collectionEntry);
+            }
+        }
+
         // Get current page from request data because the parameter is shared between plugins
         $currentPage = $this->requestData['page'] ?? 1;
 
@@ -96,7 +104,7 @@ class ListViewController extends AbstractController
         $listedMetadata = $this->metadataRepository->findByIsListed(true);
 
         if (!empty($search)) {
-            $solrResults = $this->documentRepository->findSolrWithoutCollection($this->settings, $search, $listedMetadata);
+            $solrResults = $this->documentRepository->findSolrByCollections($collections, $this->settings, $search, $listedMetadata);
 
             $itemsPerPage = $this->settings['list']['paginate']['itemsPerPage'] ?? 25;
 
