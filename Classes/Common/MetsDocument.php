@@ -600,15 +600,17 @@ final class MetsDocument extends AbstractDocument
             foreach ($mdIds as $dmdId) {
                 $mdSectionType = $this->mdSec[$dmdId]['section'];
 
-                if ($this->hasMetadataSection($metadataSections, $mdSectionType, 'dmdSec')) {
-                    continue;
-                }
+                if ($mdSectionType !== null) {
+                    if ($this->hasMetadataSection($metadataSections, $mdSectionType, 'dmdSec')) {
+                        continue;
+                    }
 
-                if (!$this->extractAndProcessMetadata($dmdId, $mdSectionType, $metadata, $cPid, $metadataSections)) {
-                    continue;
-                }
+                    if (!$this->extractAndProcessMetadata($dmdId, $mdSectionType, $metadata, $cPid, $metadataSections)) {
+                        continue;
+                    }
 
-                $metadataSections[] = $mdSectionType;
+                    $metadataSections[] = $mdSectionType;
+                }
             }
         }
 
