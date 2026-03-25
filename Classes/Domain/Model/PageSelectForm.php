@@ -25,8 +25,8 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 class PageSelectForm extends AbstractEntity
 {
     /**
+     * @var string
      * @access protected
-     * @var integer
      */
     protected $id;
 
@@ -51,7 +51,7 @@ class PageSelectForm extends AbstractEntity
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): int|string
     {
         return $this->id;
     }
@@ -59,7 +59,7 @@ class PageSelectForm extends AbstractEntity
     /**
      * @param int $id
      */
-    public function setId(int $id): void
+    public function setId(int|string $id): void
     {
         $this->id = $id;
     }
@@ -85,7 +85,7 @@ class PageSelectForm extends AbstractEntity
      */
     public function getDouble(): string
     {
-        return $this->double;
+        return $this->double ?? '0';
     }
 
     /**
