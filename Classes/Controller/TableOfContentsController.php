@@ -146,8 +146,8 @@ class TableOfContentsController extends AbstractController
             // 1. Current menu node is in rootline
             // 2. Current menu node points to another file
             // 3. Current menu node has no corresponding images
-            if (
-                $entryArray['ITEM_STATE'] == 'CUR'
+            if (true
+                || $entryArray['ITEM_STATE'] == 'CUR'
                 || (array_key_exists('points', $entry) && is_string($entry['points']))
                 || empty($this->document->getCurrentDocument()->smLinks['l2p'][$entry['id']])
             ) {
