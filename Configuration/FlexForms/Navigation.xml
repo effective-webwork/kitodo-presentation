@@ -42,7 +42,7 @@
                                     <numIndex index="1">pageStepBack</numIndex>
                                 </numIndex>
                                 <numIndex index="4">
-                                    <numIndex index="0">LLL:EXT:dlf/Resources/Private/Language/locallang_be.xlf:navigation.flexform.features.pageSelect</numIndex>
+                                    <numIndex index="0">LLL:EXT:dlf/Resources/Private/Language/locallang_be.xlf:navigation.flexForm.features.pageSelect</numIndex>
                                     <numIndex index="1">pageSelect</numIndex>
                                 </numIndex>
                                 <numIndex index="5">

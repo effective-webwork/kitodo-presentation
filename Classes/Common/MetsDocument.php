@@ -1544,7 +1544,16 @@ final class MetsDocument extends AbstractDocument
             $strctId = $this->getToplevelId();
             $metadata = $this->getToplevelMetadata();
 
-            $allResults = $this->structureRepository->findThumbnail($this->configPid, $metadata['type'][0]);
+            // The toplevel logical <div> may have no TYPE; then no structure-based
+            // thumbnail can be resolved. Skip instead of passing null to the
+            // strictly typed StructureRepository::findThumbnail().
+            $type = $metadata['type'][0] ?? '';
+            if ($type === '') {
+                $this->thumbnailLoaded = true;
+                return $this->thumbnail;
+            }
+
+            $allResults = $this->structureRepository->findThumbnail($this->configPid, $type);
 
             if (count($allResults) == 1) {
                 $resArray = $allResults[0];
@@ -1675,6 +1684,10 @@ final class MetsDocument extends AbstractDocument
             $this->asXML = '';
             $this->xml = $xml;
             // Rebuild the unserializable properties.
+            // formatRepository is not part of __sleep(), so it must be re-created
+            // before init() (which calls loadFormats()) is invoked.
+            $this->formatRepository = GeneralUtility::makeInstance(\Kitodo\Dlf\Domain\Repository\FormatRepository::class);
+            $this->formatRepository->useStoragePid($this->configPid);
             $this->init('', $this->settings);
         } else {
             $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(static::class);

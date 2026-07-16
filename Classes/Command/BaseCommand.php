@@ -262,6 +262,10 @@ class BaseCommand extends Command
 
             if ($document->getUid() === null) {
                 // new document
+                // Persist on the storage PID given via --pid; without this the
+                // Extbase persistence would fall back to PID 0 (no persistence
+                // storagePid is configured in CLI context).
+                $document->setPid($this->storagePid);
                 $this->documentRepository->add($document);
             } else {
                 // update of existing document
@@ -417,6 +421,8 @@ class BaseCommand extends Command
                 $documentCollection->setOaiName($setSpec);
                 $documentCollection->setIndexSearch('');
                 $documentCollection->setDescription('');
+                // Persist on the storage PID given via --pid (otherwise PID 0 in CLI context).
+                $documentCollection->setPid($this->storagePid);
                 // add to CollectionRepository
                 $this->collectionRepository->add($documentCollection);
                 // persist collection to prevent duplicates
@@ -488,6 +494,8 @@ class BaseCommand extends Command
                 $this->owner = GeneralUtility::makeInstance(Library::class);
                 $this->owner->setLabel($owner);
                 $this->owner->setIndexName($owner);
+                // Persist on the storage PID given via --pid (otherwise PID 0 in CLI context).
+                $this->owner->setPid($this->storagePid);
                 $this->libraryRepository->add($this->owner);
             }
         }
