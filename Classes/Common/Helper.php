@@ -503,8 +503,8 @@ class Helper
             $allStructures[$structure->getUid()] = $structure->getIndexName();
         }
 
-        // make lookup-table uid -> indexName
-        return array_column($allStructures, 'indexName', 'uid');
+        // lookup-table uid -> indexName
+        return $allStructures;
     }
 
     /**
