@@ -272,7 +272,7 @@ class SearchController extends AbstractController
         // Set search query.
         $searchParams = $this->search;
         if (
-            (array_key_exists('fulltext', $searchParams))
+            (!empty($searchParams['fulltext']))
             || preg_match('/' . $fields['fulltext'] . ':\((.*)\)/', trim($searchParams['query'] ?? ''), $matches)
         ) {
             // If the query already is a fulltext query e.g using the facets
