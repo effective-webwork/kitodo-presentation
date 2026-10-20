@@ -76,11 +76,32 @@ class ToolboxController extends AbstractController
             $tools = explode(',', $this->settings['tools']);
             $toolsToRender = [];
             foreach ($tools as $tool) {
+                $tool = $this->normalizeToolName($tool);
                 $this->renderToolByName($tool);
                 $toolsToRender[$tool] = true;
             }
             $this->view->assign('tools', $toolsToRender);
         }
+    }
+
+    /**
+     * Maps tool key names to the ones used in the templates.
+     *
+     * @access private
+     *
+     * @param string $tool name
+     *
+     * @return string
+     */
+    private function normalizeToolName(string $tool): string
+    {
+        $tool = preg_replace('/^tx_dlf_/', '', trim($tool));
+        foreach (get_class_methods($this) as $method) {
+            if (strcasecmp($method, 'render' . $tool) === 0) {
+                return lcfirst(substr($method, strlen('render')));
+            }
+        }
+        return $tool;
     }
 
     /**
