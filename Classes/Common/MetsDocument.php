@@ -1316,7 +1316,8 @@ final class MetsDocument extends AbstractDocument
                                     'admId' => (string) $file->attributes()->ADMID,
                                     'dmdId' => (string) $file->attributes()->DMDID,
                                     'mimeType' => (string) $file->attributes()->MIMETYPE,
-                                    'location' => (string) $fLocat->attributes('http://www.w3.org/1999/xlink')->href,
+                                    // FLocat may be missing or misspelled in METS files
+                                    'location' => (string) $fLocat->attributes('http://www.w3.org/1999/xlink')?->href,
                                 ];
                             }
                         }
