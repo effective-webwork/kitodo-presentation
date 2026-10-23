@@ -618,7 +618,7 @@ final class IiifManifest extends AbstractDocument
     private function smLinkCanvasToResource(CanvasInterface $canvas, IiifResourceInterface $resource): void
     {
         $this->smLinks['l2p'][$resource->getId()][] = $canvas->getId();
-        if (!is_array($this->smLinks['p2l'][$canvas->getId()]) || !in_array($resource->getId(), $this->smLinks['p2l'][$canvas->getId()])) {
+        if (!is_array($this->smLinks['p2l'][$canvas->getId()] ?? null) || !in_array($resource->getId(), $this->smLinks['p2l'][$canvas->getId()])) {
             $this->smLinks['p2l'][$canvas->getId()][] = $resource->getId();
         }
     }
