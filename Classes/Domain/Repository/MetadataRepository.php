@@ -258,7 +258,7 @@ class MetadataRepository extends AbstractRepository
         $query = $queryBuilder
             ->select(
                 self::TABLE . '.index_name AS index_name',
-                self::TABLE . '.xpath AS xpath',
+                'tx_dlf_metadataformat.xpath AS xpath',
                 'tx_dlf_metadataformat.xpath_sorting AS xpath_sorting',
                 self::TABLE . '.is_sortable AS is_sortable',
                 self::TABLE . '.default_value AS default_value',
